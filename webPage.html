@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+<style>
+    div, ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul li {
+        width: 100%;
+        height: 3rem;
+        border-bottom: 1px solid #DCDCDC;
+        list-style: none;
+        margin: 0;
+    }
+</style>
+<style id="pagebtn">
+    .pagebtnul {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+        line-height: 140%;
+        list-style: none;
+    }
+
+        .pagebtnul li {
+            list-style-type: none;
+            font-size: 13px;
+            word-break: break-all;
+            display: inline;
+            line-height: 1.5em;
+            -webkit-font-smoothing: antialiased;
+        }
+
+            .pagebtnul li a {
+                color: black;
+                float: left;
+                padding: 8px 16px;
+                text-decoration: none;
+                transition: background-color .3s;
+                border: 1px solid #ddd;
+            }
+
+    .pagination_left {
+        position: absolute;
+        left: 5px;
+        bottom: 50px;
+    }
+
+    a.active {
+        background-color: #4CAF50;
+        color: white !important;
+        border: 1px solid #4CAF50;
+    }
+</style>
+
+</head>
+<body>
+    <ul id="pageul"></ul>
+
+    <div class="pagination_left">
+
+        <ul class="pagebtnul" id="pagebtnul">
+
+            <li><a href="#">首页</a></li>
+            <li><a href="#">1</a></li>
+            <li><a class="active" href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">尾页</a></li>
+        </ul>
+
+    </div>
+
+    <script src="jquery-1.8.3.min.js"></script>
+    <script src="page.js"></script>
+
+    <script>
+    var page = new PagedList();  //分页方法
+    var pagedBtn = new PagedBtn();  //分页按钮方法
+    var showpage = 5; //显示页数 
+    var showpageCount = 3; //显示一页显示数量
+    jQuery(document).ready(function () { 
+        requestPageData();
+    })
+  
+    //填充按钮
+    function addbtn(item, showtem, CurrentPage) {
+        var sb = '';
+        if (item == CurrentPage)
+        {
+            sb+='  <li><a href="#"  class="active" onclick="clickbtn(';
+        }
+        else
+        {
+            sb+='  <li><a href="#"  onclick="clickbtn(';
+        }
+        sb+=item;
+        sb+=')">';
+        sb+=showtem;
+        sb+='</a></li>';
+        $("#pagebtnul").append(sb)
+    }
+
+    function clickbtn(CurrentPage)
+    {
+        var pagedata = page.getPagetoList(CurrentPage);
+        initPageHtml(pagedata);
+        var btns = pagedBtn.getBtntoList(CurrentPage);
+        initBtnHtml(btns, CurrentPage);
+    }
+    function initPageHtml(pagedata) {
+        $("#pageul").empty();        
+          $.each(pagedata, function (i, item) {
+              var sb = "<li>" + item.name + "</li>";
+              $("#pageul").append(sb)
+        });
+    }
+
+    function initBtnHtml(pagedata, CurrentPage) {
+        $("#pagebtnul").empty();
+        var TotalPageCount = page.TotalPageCount()
+        if (TotalPageCount != 1)
+        {
+            if (CurrentPage !=1) {
+                addbtn(1, "首页", 0);
+            }
+            // $("#ticketsul").empty();
+            $.each(pagedata, function (i, item) {
+                addbtn(item, item, CurrentPage);
+            });
+            if (CurrentPage !=TotalPageCount) {
+                addbtn(TotalPageCount, "尾页", 0);
+            }
+        }
+    }
+    function requestPageData2() {
+        $.ajax({
+            url: "url",
+            dataType: "json",
+            success: function (data) { initPagedata(pageData, 1) }
+        });
+    }
+    function requestPageData() {
+
+        data = [{ name: "分页1" }, { name: "分页2" }, { name: "分页3" }, { name: "分页4" }, { name: "分页5" }, { name: "分页6" }, { name: "分页7" }, { name: "分页8" }, { name: "分页9" }, { name: "分页10" }, { name: "分页11" }, { name: "分页12" }, { name: "分页13" }, { name: "分页14" }, { name: "分页15" }, { name: "分页16" }, { name: "分页17" }, { name: "分页18" }, { name: "分页19" }, { name: "分页20" }, ];
+         initPagedata(data, 1)
+     }
+    function initPagedata(pageData, currtpage)
+    {
+        page.initdata(pageData, showpageCount);
+        pagedBtn.initdata(page.TotalPageCount(), showpage);
+        var pagedata = page.getPagetoList(currtpage);
+        initPageHtml(pagedata);
+        var btns = pagedBtn.getBtntoList(currtpage);
+        initBtnHtml(btns, currtpage);
+    }        
+    </script>
+
+    </body>
+</html>
+
